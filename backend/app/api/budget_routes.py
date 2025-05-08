@@ -1,6 +1,7 @@
 from ..db.mongo import get_budget_collection
 from fastapi import APIRouter, HTTPException
 from ..models.budget import Budget
+from ..models.summary import BudgetSummary
 from typing import List, Optional
 from bson import ObjectId
 import datetime
@@ -74,3 +75,24 @@ async def delete_budget(budget_id:str):
     result["_id"] = str(result["_id"])
 
     return Budget(**result)
+
+@router.get("/summary", response_model=BudgetSummary)
+async def get_budget_summary(user_id):
+    query = {"user_id": user_id}
+    budgets = budget_collection.find(query).to_list(length=100)
+
+    summary = []
+
+    for budget in budgets:
+        month_str = budget["month"].strftime("%Y-%m")
+        remaining = budget["limit"] - budget.get("total_spent", 0.0)
+        summary.append(BudgetSummary(
+            month=month_str,
+            category=budget["category"],
+            limit=budget["limit"],
+            total_spent=budget.get("total_spent", 0.0),
+            remaining=remaining
+        ))
+
+    return summary
+
