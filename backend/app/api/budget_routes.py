@@ -96,3 +96,13 @@ async def get_budget_summary(user_id):
 
     return summary
 
+from fastapi import Depends
+from ..models.auth import get_current_user
+
+@router.get("/me")
+async def read_my_profile(current_user: dict = Depends(get_current_user)):
+    return {
+        "username": current_user["username"],
+        "email": current_user["email"]
+    }
+

@@ -1,4 +1,4 @@
-#!/home/oshcosh/projects/finance-dashboard/backend/venv/bin/python3
+#!/Users/gabrielguerrero/Desktop/FullStack/finance-dashboard/backend/venv/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys
