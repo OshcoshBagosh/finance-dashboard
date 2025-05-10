@@ -28,7 +28,7 @@ async def register_user(user: UserCreate):
         hashed_password= hashed_password
     )
     
-    user_dict = user_db.dict(by_alias=True)
+    user_dict = user_db.dict(by_alias=True, exclude_none=True)
     
     result = await user_collection.insert_one(user_dict)
     
@@ -39,13 +39,11 @@ async def register_user(user: UserCreate):
         username= user.username,
         full_name= user.full_name
     )
-    
-from fastapi import Depends
-from ..models.auth import get_current_user
 
-@router.get("/me")
-async def read_my_profile(current_user: dict = Depends(get_current_user)):
-    return {
-        "username": current_user["username"],
-        "email": current_user["email"]
-    }
+from ..models.auth import get_current_user
+from ..models.user import UserResponse
+from fastapi import Depends
+
+@router.get("/me", response_model=UserResponse)
+async def get_my_profile(current_user: UserResponse = Depends(get_current_user)):
+    return current_user
